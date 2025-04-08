@@ -2,15 +2,14 @@ import React from 'react'
 import axios from '@/api'
 import { useLoaderData } from 'react-router'
 export async function loader() {
-    const data = await axios.get('/post')
-    // const data = await res.json()
-    return data
+    const testData = await axios.get('/test')
+    return testData
 }
 const Home = () => {
-    const data = useLoaderData();
-    console.log(data);
+    const testData = useLoaderData();
+    console.log(testData);
   return (
-    <div>Home</div>
+    <div className=''>Home</div>
   )
 }
 
