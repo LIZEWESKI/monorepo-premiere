@@ -4,8 +4,8 @@ import { Link, NavLink } from 'react-router'
 import { Button } from '@/components/ui/button'
 const Header = () => {
     const navigation = [
-        {url: "/notes", name: "Notes"},
-        {url: "/note/create", name: "Create Note"},
+        {url: "/bokes", name: "Books"},
+        {url: "/book/create", name: "Create book"},
         {url: "/about", name: "About"}
     ]
   return (
