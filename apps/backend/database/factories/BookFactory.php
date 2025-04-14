@@ -17,10 +17,10 @@ class BookFactory extends Factory
     public function definition(): array
     {
         return [
-            "title" => fake()->words(2,true),
+            "title" => fake()->realText(15),
             "author" => fake()->name(),
             "genre" => fake()->randomElement(["Horror","Comedy","Drama","Romance","Fantasy"]),
-            "published_year" => fake()->year("2000"),
+            "published_year" => fake()->year(),
             "isbn" => fake()->isbn13(),
             "status" => fake()->randomElement(["available","borrowed","lost"]),
         ];

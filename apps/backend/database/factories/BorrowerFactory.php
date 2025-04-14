@@ -19,7 +19,7 @@ class BorrowerFactory extends Factory
         return [
             "name" => fake()->userName(),
             "email" => fake()->email(),
-            "member_since" => fake()->date(),
+            "member_since" => fake()->dateTimeBetween('-1 year'),
             "active" => fake()->boolean(),
         ];
     }
