@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateBookRequest extends FormRequest
@@ -11,7 +12,7 @@ class UpdateBookRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +22,31 @@ class UpdateBookRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-        ];
+        $method = $this->method();
+        if($method === "PUT") {
+            return [
+                "title" => "required|min:3|max:30",
+                "author" => "required|min:3|max:255",
+                "genre" => ["required", Rule::in(["Horror","Comedy","Drama","Romance","Fantasy"])],
+                "publishedYear" => 'required|size:4',
+                "isbn" => ["required","size:13","string",Rule::unique('books', 'isbn')->ignore($this->book)],
+                "status" => ["required",Rule::in(['available', 'borrowed', 'lost'])]
+            ];
+        }else{ 
+            return [
+                "title" => "sometimes|required|min:3|max:30",
+                "author" => "sometimes|required|min:3|max:255",
+                "genre" => ["sometimes","required", Rule::in(["Horror","Comedy","Drama","Romance","Fantasy"])],
+                "publishedYear" => 'sometimes|required|size:4',
+                "isbn" => ["sometimes","required","size:13","string",Rule::unique('books', 'isbn')->ignore($this->book)],
+                "status" => ["sometimes","required",Rule::in(['available', 'borrowed', 'lost'])]
+            ];
+        }
+    }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            "published_year" => $this->publishedYear, 
+        ]);
     }
 }

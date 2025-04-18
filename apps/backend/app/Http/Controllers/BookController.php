@@ -3,25 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Filters\BookFilter;
+use App\Http\Resources\BooksResource;
 use App\Http\Requests\StoreBookRequest;
+use App\Http\Resources\BooksCollection;
 use App\Http\Requests\UpdateBookRequest;
+use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $filter = new BookFilter();
+        $filterItems = $filter->transform($request); // [["column","operator","value"],...]
+        $includeBorrowings = $request->query("includeBorrowings");
+        $books = Book::where($filterItems);
+        if($includeBorrowings) {
+            $books->with("borrowings");
+        }
+        return new BooksCollection($books->paginate(5)->appends($request->query()));
+        
     }
 
     /**
@@ -29,23 +33,17 @@ class BookController extends Controller
      */
     public function store(StoreBookRequest $request)
     {
-        //
+        return new BooksResource(Book::create($request->all()));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Book $book)
+    public function show(Book $book, Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Book $book)
-    {
-        //
+        $includeBorrowings = $request->query("includeBorrowings");
+        if($includeBorrowings) return new BooksResource($book->loadMissing("borrowings"));
+        return new BooksResource($book);
     }
 
     /**
@@ -53,7 +51,7 @@ class BookController extends Controller
      */
     public function update(UpdateBookRequest $request, Book $book)
     {
-        //
+        return $book->update($request->all());
     }
 
     /**
@@ -61,6 +59,6 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        //
+        $book->delete();
     }
 }

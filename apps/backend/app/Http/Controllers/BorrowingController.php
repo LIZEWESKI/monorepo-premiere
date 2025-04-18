@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Borrowing;
+use Illuminate\Http\Request;
+use App\Filters\BorrowingFilter;
+use App\Http\Resources\BorrowingsResource;
 use App\Http\Requests\StoreBorrowingRequest;
+use App\Http\Resources\BorrowingsCollection;
 use App\Http\Requests\UpdateBorrowingRequest;
 
 class BorrowingController extends Controller
@@ -11,17 +15,12 @@ class BorrowingController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $filter = new BorrowingFilter();
+        $filterItems = $filter->transform($request);
+        $borrowings = Borrowing::where($filterItems);
+        return new BorrowingsCollection($borrowings->paginate(5)->appends($request->query()));
     }
 
     /**
@@ -37,15 +36,7 @@ class BorrowingController extends Controller
      */
     public function show(Borrowing $borrowing)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Borrowing $borrowing)
-    {
-        //
+        return new BorrowingsResource($borrowing);
     }
 
     /**
