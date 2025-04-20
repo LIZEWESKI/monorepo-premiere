@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreBorrowingRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreBorrowingRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,21 @@ class StoreBorrowingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "bookId" => ["required","exists:books,id"],
+            "borrowerId" => ["required","exists:borrowers,id"], 
+            "borrowDate" => ["required","date","before:return_date"], 
+            "returnDate" => ["nullable","date","after:borrow_date"],
+            "status" => ["required", Rule::in(['borrowed', 'returned', 'overdue'])] 
         ];
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            "book_id" => $this->bookId,
+            "borrower_id" => $this->borrowerId,
+            "borrow_date" => $this->borrowDate,
+            "return_date" => $this->returnDate,
+        ]);
+    }
+
 }

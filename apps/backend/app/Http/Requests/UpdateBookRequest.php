@@ -45,8 +45,10 @@ class UpdateBookRequest extends FormRequest
     }
     protected function prepareForValidation()
     {
-        $this->merge([
-            "published_year" => $this->publishedYear, 
-        ]);
+        if($this->publishedYEar) {
+            $this->merge([
+                "published_year" => $this->publishedYear, 
+            ]);
+        }
     }
 }

@@ -28,7 +28,7 @@ class BorrowingController extends Controller
      */
     public function store(StoreBorrowingRequest $request)
     {
-        //
+        new BorrowingsResource(Borrowing::create($request->all()));
     }
 
     /**
@@ -44,7 +44,7 @@ class BorrowingController extends Controller
      */
     public function update(UpdateBorrowingRequest $request, Borrowing $borrowing)
     {
-        //
+        return $borrowing->update($request->all());
     }
 
     /**
