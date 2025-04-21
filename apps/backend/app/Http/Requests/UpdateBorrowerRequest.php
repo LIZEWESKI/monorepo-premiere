@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Support\Str;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateBorrowerRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class UpdateBorrowerRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +23,33 @@ class UpdateBorrowerRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-        ];
+        $method = $this->method();
+        if($method === "PUT") {
+            return [
+                "name" => ["required","max:250", "min:4"],
+                "email" => ["required","email", Rule::unique("borrowers","email")->ignore($this->borrower)],
+                "member_since" => ["required","date"],
+                "active" => ["required","boolean"],
+            ];
+        } else {
+            return [
+                "name" => ["sometimes","required","max:250", "min:4"],
+                "email" => ["sometimes","required","email", Rule::unique("borrowers","email")->ignore($this->borrower)],
+                "member_since" => ["sometimes","required","date"],
+                "active" => ["sometimes","required","boolean"],
+            ];
+        }
+    }
+    protected function prepareForValidation()
+    {
+        // now this code sorta pays off since we need to work with patch request!
+        $fields = ["memberSince"];
+        $data = collect($this->only($fields))
+                ->filter()
+                ->mapWithKeys(function($value, $key) {
+                    return [Str::snake($key) => $value];
+                });
+        $this->merge($data->all());
+
     }
 }

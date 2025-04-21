@@ -30,7 +30,7 @@ class BorrowerController extends Controller
      */
     public function store(StoreBorrowerRequest $request)
     {
-        
+        return new BorrowersResource(Borrower::create($request->all()));
     }
 
     /**
@@ -48,7 +48,7 @@ class BorrowerController extends Controller
      */
     public function update(UpdateBorrowerRequest $request, Borrower $borrower)
     {
-        //
+        return $borrower->update($request->all());
     }
 
     /**
@@ -56,6 +56,6 @@ class BorrowerController extends Controller
      */
     public function destroy(Borrower $borrower)
     {
-        //
+        return $borrower->delete();
     }
 }
