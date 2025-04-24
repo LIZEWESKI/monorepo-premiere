@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Filters\BookFilter;
+use Illuminate\Http\Request;
 use App\Http\Resources\BooksResource;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Resources\BooksCollection;
 use App\Http\Requests\UpdateBookRequest;
-use Illuminate\Http\Request;
+use App\Http\Requests\BulkStoreBookRequest;
+use Illuminate\Support\Arr;
 
 class BookController extends Controller
 {
@@ -35,6 +37,20 @@ class BookController extends Controller
     {
         return new BooksResource(Book::create($request->all()));
     }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function bulkStore(BulkStoreBookRequest $request)
+    {
+        $bulk = collect($request->all())->map(function($arr,$key) {
+            return Arr::except($arr,["publishedYear"]);
+        });
+        Book::insert($bulk->toArray());
+        // return new BooksResource(Book::create($request->all()));
+    }
+
+
 
     /**
      * Display the specified resource.
