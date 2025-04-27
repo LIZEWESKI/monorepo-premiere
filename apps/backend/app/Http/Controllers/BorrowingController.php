@@ -9,6 +9,8 @@ use App\Http\Resources\BorrowingsResource;
 use App\Http\Requests\StoreBorrowingRequest;
 use App\Http\Resources\BorrowingsCollection;
 use App\Http\Requests\UpdateBorrowingRequest;
+use App\Http\Requests\BulkStoreBorrowingRequest;
+use Illuminate\Support\Arr;
 
 class BorrowingController extends Controller
 {
@@ -29,6 +31,15 @@ class BorrowingController extends Controller
     public function store(StoreBorrowingRequest $request)
     {
         new BorrowingsResource(Borrowing::create($request->all()));
+    }
+    public function bulkstore(BulkStoreBorrowingRequest $request)
+    {
+        // After getting all the data from the validated request, we exclude unwanted columns
+        $bulk = collect($request->all())->map(function($arr,$key){
+            return Arr::except($arr,["bookId","borrowerId","borrowDate","returnDate"]);
+        });
+        // we bulk insert rows after converting the collection into an array
+        Borrowing::insert($bulk->toArray());
     }
 
     /**

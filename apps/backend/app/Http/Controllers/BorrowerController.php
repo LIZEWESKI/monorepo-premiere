@@ -9,6 +9,8 @@ use App\Http\Resources\BorrowersResource;
 use App\Http\Requests\StoreBorrowerRequest;
 use App\Http\Resources\BorrowersCollection;
 use App\Http\Requests\UpdateBorrowerRequest;
+use App\Http\Requests\BulkStoreBorrowerRequest;
+use Illuminate\Support\Arr;
 
 class BorrowerController extends Controller
 {
@@ -31,6 +33,13 @@ class BorrowerController extends Controller
     public function store(StoreBorrowerRequest $request)
     {
         return new BorrowersResource(Borrower::create($request->all()));
+    }
+    public function bulkStore(BulkStoreBorrowerRequest $request)
+    {
+        $bulk = collect($request->all())->map(function($arr,$key){
+            return Arr::except($arr,["memberSince"]);
+        });
+        Borrower::insert($bulk->toArray());
     }
 
     /**
